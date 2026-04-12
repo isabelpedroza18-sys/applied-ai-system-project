@@ -28,6 +28,9 @@ class UserProfile:
     favorite_genre: str
     favorite_mood: str
     target_energy: float
+    target_danceability: float
+    target_valence: float
+    target_tempo_bpm: float
     likes_acoustic: bool
 
 class Recommender:
@@ -67,17 +70,20 @@ def load_songs(csv_path: str) -> List[Dict]:
                 print(f"Skipping row due to error: {row} - {e}")
     return songs
 
-def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
+def score_song(user_prefs: Dict, song: Dict, min_tempo: float, max_tempo: float) -> Tuple[float, List[str]]:
     """Scores a single song against user preferences and provides reasons."""
     score = 0.0
     reasons = []
 
-    # Define weights for each feature
+    # Define weights for each feature, now including the new attributes
     weights = {
-        "genre": 0.3,
-        "mood": 0.3,
-        "energy": 0.3,
-        "acoustic": 0.1
+        "genre": 0.25,
+        "mood": 0.2,
+        "energy": 0.15,
+        "danceability": 0.15,
+        "valence": 0.15,
+        "tempo": 0.05,
+        "acoustic": 0.05
     }
 
     # 1. Score Genre
@@ -98,18 +104,40 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
 
     # 3. Score Energy
     energy_score = 1 - abs(song["energy"] - user_prefs["target_energy"])
-    if energy_score > 0.7: # Add reason only if it's a good match
+    if energy_score > 0.8: # Increased threshold for a more meaningful reason
         reasons.append(f"Energy is a close match (+{weights['energy'] * energy_score:.2f})")
     score += weights["energy"] * energy_score
 
-    # 4. Score Acoustic Preference
+    # 4. Score Danceability
+    danceability_score = 1 - abs(song["danceability"] - user_prefs["target_danceability"])
+    if danceability_score > 0.8:
+        reasons.append(f"Danceability is a close match (+{weights['danceability'] * danceability_score:.2f})")
+    score += weights["danceability"] * danceability_score
+
+    # 5. Score Valence
+    valence_score = 1 - abs(song["valence"] - user_prefs["target_valence"])
+    if valence_score > 0.8:
+        reasons.append(f"Valence (mood positivity) is a close match (+{weights['valence'] * valence_score:.2f})")
+    score += weights["valence"] * valence_score
+
+    # 6. Score Tempo (with normalization)
+    # Normalize both the song's and user's tempo to a 0-1 scale
+    if max_tempo > min_tempo:
+        norm_song_tempo = (song["tempo_bpm"] - min_tempo) / (max_tempo - min_tempo)
+        norm_user_tempo = (user_prefs["target_tempo_bpm"] - min_tempo) / (max_tempo - min_tempo)
+        tempo_score = 1 - abs(norm_song_tempo - norm_user_tempo)
+        if tempo_score > 0.8:
+            reasons.append(f"Tempo is a close match (+{weights['tempo'] * tempo_score:.2f})")
+        score += weights["tempo"] * tempo_score
+
+    # 7. Score Acoustic Preference
     if user_prefs["likes_acoustic"]:
         acoustic_score = song["acousticness"]
-        if acoustic_score > 0.6:
+        if acoustic_score > 0.7:
             reasons.append(f"Acoustic preference match (+{weights['acoustic'] * acoustic_score:.2f})")
     else:
         acoustic_score = 1 - song["acousticness"]
-        if acoustic_score > 0.6: # Corresponds to low actual acousticness
+        if acoustic_score > 0.7: # Corresponds to low actual acousticness
             reasons.append(f"Acoustic preference match (+{weights['acoustic'] * acoustic_score:.2f})")
     score += weights["acoustic"] * acoustic_score
     
@@ -121,10 +149,14 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
 def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tuple[Dict, float, str]]:
     """Scores and ranks all songs to find the top k recommendations."""
     scored_songs = []
+
+    # Find min and max tempo for normalization before scoring
+    tempos = [song['tempo_bpm'] for song in songs]
+    min_tempo, max_tempo = min(tempos), max(tempos)
     
     # Loop through all songs and score them against user preferences
     for song in songs:
-        score, reasons = score_song(user_prefs, song)
+        score, reasons = score_song(user_prefs, song, min_tempo, max_tempo)
         if reasons: # Only consider songs that have at least one matching reason
             explanation = ", ".join(reasons)
             scored_songs.append((song, score, explanation))

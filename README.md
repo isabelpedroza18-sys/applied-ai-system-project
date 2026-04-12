@@ -4,16 +4,15 @@
 
 In this project you will build and explain a small music recommender system.
 
-Your goal is to:
+My goal is to:
 
 - Represent songs and a user "taste profile" as data
 - Design a scoring rule that turns that data into recommendations
 - Evaluate what your system gets right and wrong
 - Reflect on how this mirrors real world AI recommenders
 - Provide recommendation reasoning explanation for each song recommendation.
-
-
----
+- Test different user profiles and analyze the results. 
+- Modify the design to view the change of the output and compare to previous versions.
 
 ## How The System Works
 
@@ -82,7 +81,7 @@ Use this section to document the experiments you ran. For example:
 - What happened when you added tempo or valence to the score
 - How did your system behave for different types of users
 
----
+---When I lowered the genre weight from 0.5 to 0.3 I adjusted the rest of the scored attributes to balance out the scoring system. The recommendations stayed the same, but the scores lowered a bit for genre and rose for the other features. When I added tempo, valence, and danceability as attributes to UserProfile class, the recommendations stayed about the same, but the explanations were longer. When I added user profiles with unrecognized genres, or moods, the scores were low for all of the recommendations.
 
 ## Limitations and Risks
 
@@ -110,7 +109,7 @@ Write 1 to 2 paragraphs here about what you learned:
 - about where bias or unfairness could show up in systems like this
 
 
----I learned about the difference between collaborative and content-based filtering and how many larger streaming companies utilize a mixture of both to recommend similar and new music to listeners. It is really interesting to me what goes on behind the logic of those recommendations. Bias could show up in the system in the form of the dataset itself or algorithmic bias. Although, my dataset is diverse, it is small, as a result a user that likes one of those genres will get very few, if any , recommendations. The initial 10 songs were heavily focused on modern electronic-influenced genres like pop, lofi, and synthwave. If I hadn't added more variety, the system would have a strong bias towards this type of music, creating a "filter bubble" where users are never exposed to anything else. The concepts of energy or mood might be interpreted differently across cultures. A song considered "happy" in one culture might be perceived differently in another. In your score_song function, we assigned genre a weight of 0.5. This means a genre match is considered overwhelmingly important. This creates a bias where the system will almost always favor a song of the correct genre, even if its other attributes are a poor match. While my system doesn't explicitly track popularity, real-world systems often do. They tend to recommend what is already popular, creating a feedback loop where popular artists get more popular, and emerging artists are ignored.
+---I learned about the difference between collaborative and content-based filtering and how many larger streaming companies utilize a mixture of both techniques to recommend similar and new music to listeners. It is really interesting to me what goes on behind the logic of those recommendations. Bias could show up in the system in the form of the dataset itself or algorithmic bias. Although, my dataset is diverse, it is small, as a result a user that likes one of those genres will get very few, if any , recommendations. The initial 10 songs were heavily focused on modern electronic-influenced genres like pop, lofi, and synthwave. If I hadn't added more variety, the system would have a strong bias towards this type of music, creating a "filter bubble" where users are never exposed to anything else. The concepts of energy or mood might be interpreted differently across cultures. A song considered "happy" in one culture might be perceived differently in another. In your score_song function, we assigned genre a weight of 0.5. This means a genre match is considered overwhelmingly important. This creates a bias where the system will almost always favor a song of the correct genre, even if its other attributes are a poor match. While my system doesn't explicitly track popularity, real-world systems often do. They tend to recommend what is already popular, creating a feedback loop where popular artists get more popular, and emerging artists are ignored.
 
 ## 7. `model_card_template.md`
 
@@ -162,7 +161,7 @@ Describe your dataset.
 - What kinds of genres or moods are represented
 - Whose taste does this data mostly reflect
 
---- There are 17 songs in the songs.csv dataset. With the help of Copilot, I added 7out of the 17 songs. The dataset is diverse and includes a mix of electronic and acousticc, mainstream niche genres such as pop, lofi, rock, ambient, jazz, synthwave, indie pop, electronic, reggae, country, and classical. The moods that are represented are happy, chill, intense, relaxed, moody, focused, energetic, uplifting, sad, peaceful, epic, thoughtful, and nostalgic. The dataset does not reflect a single person's taste. It is a curated collection designed for testinf a recommender system.
+--- There are 27 songs in the songs.csv dataset. With the help of Copilot, I added 17 out of the 27 songs. The dataset is diverse and includes a mix of electronic and acousticc, mainstream niche genres such as pop, lofi, rock, ambient, jazz, synthwave, indie pop, electronic, reggae, country, classical, etc. The moods that are represented are happy, chill, intense, relaxed, moody, focused, energetic, uplifting, sad, peaceful, epic, thoughtful, nostalgic, etc. The dataset does not reflect a single person's taste. It is a curated collection designed for testing a recommender system.
 
 ## 5. Strengths
 
@@ -186,7 +185,7 @@ Some prompts:
 - Is it biased toward high energy or one genre by default
 - How could this be unfair if used in a real product
 
----The recommender is stateless. It cannot learn from a user's past interactions. Also, it is purely content-based system, so it will only recommend songs that are similar to what the user already likes. It will struggle to introduce the user to completely new and different genres or artist they might enjoy. The UserProfile simplifies human taste significantly. It does not account for preferences related to danceability, valece, or tempo. In addition, the recommenders world is limited to the songs listed in the songs.csv file. The weights I defined in the score_song function are based o nour own assumptions about what makes a good recommendation.
+---The recommender is stateless. It cannot learn from a user's past interactions. Also, it is purely content-based system, so it will only recommend songs that are similar to what the user already likes. It will struggle to introduce the user to completely new and different genres or artist they might enjoy. The UserProfile simplifies human taste significantly. It does not account for preferences related to danceability, valece, or tempo. In addition, the recommenders world is limited to the songs listed in the songs.csv file. The weights I defined in the score_song function are based on my own assumptions about what makes a good recommendation.
 
 ## 7. Evaluation
 
@@ -199,7 +198,7 @@ Examples:
 
 You do not need a numeric metric, but if you used one, explain what it measures.
 
----I tried multiple user profiles to see if the results matched what I was expecting. I asked Copilot to generate some tests in this projects test_recommender. py file. I added scoring logic that worked with a small-to-medium scale dataset. 
+---I tried multiple user profiles to see if the results matched what I was expecting. I generated some tests in this projects test_recommender. py file. I added scoring logic that worked with a small-to-medium scale dataset. 
 
 
 ## 8. Future Work
@@ -212,7 +211,7 @@ Examples:
 - Balance diversity of songs instead of always picking the closest match
 - Use more features, like tempo ranges or lyric themes
 
----I would add more attributes to be stored into UserProfile so that the scoring would better match songs based on all the usual data types including danceability, valence, and tempo. Also, I would add more songs to the songs.csv file.
+---I would add code to consider type any for genre or mood, since they make up the majority of the score. Also, I would add more songs to the songs.csv file. 
 
 ## 9. Personal Reflection
 

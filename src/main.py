@@ -24,11 +24,14 @@ def main() -> None:
         print("No songs were loaded. Exiting.")
         return
 
-    # 2. Define two different user taste profiles
+    # 2. Define user taste profiles, now with more detail
     taste_profile1 = {
         "favorite_genre": "indie pop",
         "favorite_mood": "chill",
         "target_energy": 0.6,
+        "target_danceability": 0.7,
+        "target_valence": 0.75,
+        "target_tempo_bpm": 120,
         "likes_acoustic": False
     }
 
@@ -36,13 +39,19 @@ def main() -> None:
         "favorite_genre": "rock",
         "favorite_mood": "intense",
         "target_energy": 0.9,
+        "target_danceability": 0.6,
+        "target_valence": 0.4,
+        "target_tempo_bpm": 150,
         "likes_acoustic": False
     }
-    #default user profile initially provided. I added likes acoustic as false.
+    
     taste_profile3 = {
         "favorite_genre": "pop", 
         "favorite_mood": "happy", 
         "target_energy": 0.8,
+        "target_danceability": 0.8,
+        "target_valence": 0.8,
+        "target_tempo_bpm": 125,
         "likes_acoustic": False
     }
 
@@ -51,6 +60,9 @@ def main() -> None:
         "favorite_genre": "lofi",
         "favorite_mood": "any", # A mood not in the dataset
         "target_energy": 0.95,  # Extremely high energy
+        "target_danceability": 0.9,
+        "target_valence": 0.8,
+        "target_tempo_bpm": 140,
         "likes_acoustic": False
     }
 
@@ -58,6 +70,9 @@ def main() -> None:
         "favorite_genre": "nonexistent_genre", # A genre that is not in songs.csv
         "favorite_mood": "intense",
         "target_energy": 0.92,
+        "target_danceability": 0.7,
+        "target_valence": 0.5,
+        "target_tempo_bpm": 160,
         "likes_acoustic": False
     }
 
@@ -65,6 +80,9 @@ def main() -> None:
         "favorite_genre": "nonexistent_genre",
         "favorite_mood": "any",
         "target_energy": 0.5, # A neutral energy target
+        "target_danceability": 0.5,
+        "target_valence": 0.5,
+        "target_tempo_bpm": 90,
         "likes_acoustic": True
     }
     

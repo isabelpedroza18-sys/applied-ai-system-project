@@ -16,3 +16,13 @@ id,title,artist,genre,mood,energy,tempo_bpm,valence,danceability,acousticness
 15,The Grand Finale,Vienna Virtuosos,classical,epic,0.92,170,0.55,0.30,0.89
 16,City Cipher,MC Flowstate,hip-hop,thoughtful,0.65,92,0.68,0.80,0.40
 17,Summer's End,Golden Hour,indie pop,nostalgic,0.55,115,0.45,0.65,0.55
+18,Iron Forge,Serpent's Kiss,metal,aggressive,0.95,180,0.25,0.50,0.02
+19,Delta Blues,Muddy Waters Jr.,blues,soulful,0.48,105,0.55,0.68,0.75
+20,Funkytown Getdown,The Groove Masters,funk,groovy,0.85,115,0.90,0.88,0.15
+21,Velvet Nights,Serena Soul,r&b,smooth,0.55,95,0.65,0.75,0.40
+22,Winding Road,The Wandering Minstrel,folk,storytelling,0.38,110,0.45,0.60,0.85
+23,Berlin Underground,DJ Klaus,techno,driving,0.90,140,0.40,0.82,0.05
+24,Morning Praise,The Gospel Choir,gospel,spiritual,0.60,100,0.70,0.55,0.30
+25,Skankin' Shoes,The Upbeats,ska,energetic,0.88,150,0.92,0.78,0.10
+26,Global Village,World Beat Ensemble,world,rhythmic,0.75,125,0.85,0.70,0.28
+27,Crystal Caves,Enya's Cousin,new age,meditative,0.20,65,0.30,0.25,0.95

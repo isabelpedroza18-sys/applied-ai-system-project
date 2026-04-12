@@ -39,20 +39,27 @@ def test_score_song_perfect_match():
         "favorite_genre": "pop",
         "favorite_mood": "happy",
         "target_energy": 0.8,
+        "target_danceability": 0.8,
+        "target_valence": 0.9,
+        "target_tempo_bpm": 120,
         "likes_acoustic": False
     }
     song = {
-        "genre": "pop", "mood": "happy", "energy": 0.8, "acousticness": 0.1
+        "genre": "pop", "mood": "happy", "energy": 0.8, "acousticness": 0.1,
+        "danceability": 0.8, "valence": 0.9, "tempo_bpm": 120
     }
     
-    score, reasons = score_song(user_prefs, song)
+    # Min/max tempo don't have to be exact for this test, just representative
+    score, reasons = score_song(user_prefs, song, 60, 180)
     
-    # With perfect matches on genre, mood, and energy, and a good acoustic score,
-    # the total score should be very high (close to 1.0)
+    # With perfect matches on almost everything, score should be very high
     assert score > 0.9
     assert "Genre match" in ", ".join(reasons)
     assert "Mood match" in ", ".join(reasons)
     assert "Energy is a close match" in ", ".join(reasons)
+    assert "Danceability is a close match" in ", ".join(reasons)
+    assert "Valence (mood positivity) is a close match" in ", ".join(reasons)
+    assert "Tempo is a close match" in ", ".join(reasons)
 
 
 def test_score_song_mismatch():
@@ -64,17 +71,20 @@ def test_score_song_mismatch():
         "favorite_genre": "pop",
         "favorite_mood": "happy",
         "target_energy": 0.8,
+        "target_danceability": 0.8,
+        "target_valence": 0.9,
+        "target_tempo_bpm": 120,
         "likes_acoustic": False
     }
     song = {
-        "genre": "rock", "mood": "sad", "energy": 0.2, "acousticness": 0.9
+        "genre": "rock", "mood": "sad", "energy": 0.2, "acousticness": 0.9,
+        "danceability": 0.2, "valence": 0.1, "tempo_bpm": 80
     }
     
-    score, reasons = score_song(user_prefs, song)
+    score, reasons = score_song(user_prefs, song, 60, 180)
     
     # With no matches, the score should be very low.
-    # It won't be 0 because of the energy and acoustic calculations, but it will be small.
-    assert score < 0.3
+    assert score < 0.2
     assert len(reasons) == 0
 
 
@@ -84,24 +94,53 @@ def test_score_song_acoustic_preference():
     """
     from src.recommender import score_song
     
-    # Case 1: User likes acoustic, song is highly acoustic
-    user_likes_acoustic = {"likes_acoustic": True}
-    acoustic_song = {"acousticness": 0.95}
-    
-    # We only need a subset of keys for this test
-    acoustic_score_like = score_song(
-        {"likes_acoustic": True, "favorite_genre": "", "favorite_mood": "", "target_energy": 0},
-        {"acousticness": 0.95, "genre": "", "mood": "", "energy": 0}
-    )[0]
+    # Create a base user profile and song with neutral values
+    base_prefs = {
+        "favorite_genre": "a", "favorite_mood": "b", "target_energy": 0.5,
+        "target_danceability": 0.5, "target_valence": 0.5, "target_tempo_bpm": 120
+    }
+    base_song = {
+        "genre": "c", "mood": "d", "energy": 0.5, "danceability": 0.5,
+        "valence": 0.5, "tempo_bpm": 120, "acousticness": 0.95
+    }
 
-    # Case 2: User dislikes acoustic, song is highly acoustic
-    acoustic_score_dislike = score_song(
-        {"likes_acoustic": False, "favorite_genre": "", "favorite_mood": "", "target_energy": 0},
-        {"acousticness": 0.95, "genre": "", "mood": "", "energy": 0}
-    )[0]
+    # Case 1: User likes acoustic
+    prefs_like_acoustic = {**base_prefs, "likes_acoustic": True}
+    score_like, _ = score_song(prefs_like_acoustic, base_song, 60, 180)
 
-    # The score for the user who likes acoustic should be significantly higher
-    assert acoustic_score_like > acoustic_score_dislike
+    # Case 2: User dislikes acoustic
+    prefs_dislike_acoustic = {**base_prefs, "likes_acoustic": False}
+    score_dislike, _ = score_song(prefs_dislike_acoustic, base_song, 60, 180)
+
+    # The score for the user who likes the highly acoustic song should be higher
+    assert score_like > score_dislike
+
+
+def test_score_song_tempo_normalization():
+    """
+    Tests that tempo is normalized and scored correctly.
+    """
+    from src.recommender import score_song
+    user_prefs = {
+        "favorite_genre": "a", "favorite_mood": "b", "target_energy": 0.5,
+        "target_danceability": 0.5, "target_valence": 0.5, "target_tempo_bpm": 100,
+        "likes_acoustic": False
+    }
+    # Song with tempo close to target
+    song_close_tempo = {
+        "genre": "c", "mood": "d", "energy": 0.5, "danceability": 0.5,
+        "valence": 0.5, "tempo_bpm": 105, "acousticness": 0.5
+    }
+    # Song with tempo far from target
+    song_far_tempo = {**song_close_tempo, "tempo_bpm": 170}
+
+    min_tempo, max_tempo = 60, 180
+
+    score_close, _ = score_song(user_prefs, song_close_tempo, min_tempo, max_tempo)
+    score_far, _ = score_song(user_prefs, song_far_tempo, min_tempo, max_tempo)
+
+    # The song with the closer tempo should have a higher score
+    assert score_close > score_far
 
 
 def test_recommend_returns_songs_sorted_by_score():
@@ -109,6 +148,9 @@ def test_recommend_returns_songs_sorted_by_score():
         favorite_genre="pop",
         favorite_mood="happy",
         target_energy=0.8,
+        target_danceability=0.8,
+        target_valence=0.9,
+        target_tempo_bpm=120,
         likes_acoustic=False,
     )
     rec = make_small_recommender()
@@ -125,6 +167,9 @@ def test_explain_recommendation_returns_non_empty_string():
         favorite_genre="pop",
         favorite_mood="happy",
         target_energy=0.8,
+        target_danceability=0.8,
+        target_valence=0.9,
+        target_tempo_bpm=120,
         likes_acoustic=False,
     )
     rec = make_small_recommender()
