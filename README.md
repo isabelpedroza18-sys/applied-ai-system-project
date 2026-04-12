@@ -10,8 +10,8 @@ Your goal is to:
 - Design a scoring rule that turns that data into recommendations
 - Evaluate what your system gets right and wrong
 - Reflect on how this mirrors real world AI recommenders
+- Provide recommendation reasoning explanation for each song recommendation.
 
-Replace this paragraph with your own summary of what your version does.
 
 ---
 
@@ -29,7 +29,14 @@ Some prompts to answer:
 
 You can include a simple diagram or bullet list if helpful.
 
-My system will focus greater on a song's categorical features such as genre, artist, mood. Additionally, it will use numerical audio features such as energy, tempo_bpm, valence, danceability, and acousticness to generate a score that will compare these values to candidate songs. To calculate a numerical feature the system will calculate the absolute value of the difference between a liked song and a candiate song and then subtract it from 1, for example, Energy score = 1-|energy_liked_song - energy_candidate_song|. Subtracting from 1 inverts the result, therefore a smaller difference results in a higher score. Second, the sytem will score categorical features using a binary method. They will eaither match or not match, then they will be multiplied by their weight. For example, if genre_liked_song==genre_candidate_song the score is 1, otherwise it's 0. Then, the sytem will combine scores with weights into a single similarity score. For example, Total_Score = (genre score *w_genre)+ (Mood score * w_mood)+... where w_ represents the weight for each feature. The sum of all weights should equal 1 or 100%. w_genre = 0.4 (40%), w_mood = 0.2 (20%), w_energy = 0.1 (10%), w_danceability = 0.1 (10%), w_valence =0.1 (10%), w_acousticness = 0.1 (10%), so the total will be 1.0. In conclusion, the Scoring Rule is the engine for calculating similarity for one item, and the Ranking Rule is the process of using that engine to score all items and then sort them to create the final recommendation list. The userProfile will store favorite_genre, favorite_mood, target_energy, and likes_acoustic.
+Scoring: Each song is compared to the user's preferences.
+
+Categorical Features: A song gets a high score if its genre or mood directly matches the user's favorites.
+Numerical Features: For energy and acousticness, the system calculates a similarity score—the closer the song's attribute is to the user's preference, the higher the score.
+Weighting: These individual scores are combined into a final "Total Score." To ensure the most important factors have the biggest impact, matches are weighted, with genre having the most influence (50%), followed by mood (20%), energy (20%), and acousticness (10%).
+
+Ranking: Finally, the system ranks all the songs by their Total Score and returns the top results. This entire process ensures that the final recommendations are a balanced blend of matching the user's core tastes while also considering the finer details of the music.
+
 ---
 
 ## Getting Started
@@ -89,7 +96,7 @@ Examples:
 
 You will go deeper on this in your model card.
 
----
+---The recommender is stateless. It cannot learn from a user's past interactions. Also, it is purely content-based system, so it will only recommend songs that are similar to what the user already likes. It will struggle to introduce the user to completely new and different genres or artist they might enjoy. The UserProfile simplifies human taste significantly. It does not account for preferences related to danceability, valece, or tempo. In addition, the recommenders world is limited to the songs listed in the songs.csv file. The weights I defined in the score_song function are based on my own assumptions about what makes a good recommendation. Users whose tastes don't fit the rigid structure of the UserProfile or the assumptions in the scoring weights will receive poor, unsatisfying recommendations.
 
 ## Reflection
 
@@ -103,7 +110,7 @@ Write 1 to 2 paragraphs here about what you learned:
 - about where bias or unfairness could show up in systems like this
 
 
----
+---I learned about the difference between collaborative and content-based filtering and how many larger streaming companies utilize a mixture of both to recommend similar and new music to listeners. It is really interesting to me what goes on behind the logic of those recommendations. Bias could show up in the system in the form of the dataset itself or algorithmic bias. Although, my dataset is diverse, it is small, as a result a user that likes one of those genres will get very few, if any , recommendations. The initial 10 songs were heavily focused on modern electronic-influenced genres like pop, lofi, and synthwave. If I hadn't added more variety, the system would have a strong bias towards this type of music, creating a "filter bubble" where users are never exposed to anything else. The concepts of energy or mood might be interpreted differently across cultures. A song considered "happy" in one culture might be perceived differently in another. In your score_song function, we assigned genre a weight of 0.5. This means a genre match is considered overwhelmingly important. This creates a bias where the system will almost always favor a song of the correct genre, even if its other attributes are a poor match. While my system doesn't explicitly track popularity, real-world systems often do. They tend to recommend what is already popular, creating a feedback loop where popular artists get more popular, and emerging artists are ignored.
 
 ## 7. `model_card_template.md`
 
@@ -205,7 +212,7 @@ Examples:
 - Balance diversity of songs instead of always picking the closest match
 - Use more features, like tempo ranges or lyric themes
 
----I would add more attributes to be stored into UserProfile so that the scoring would better match songs based on all the usual data types including danceability, valence, and tempo.
+---I would add more attributes to be stored into UserProfile so that the scoring would better match songs based on all the usual data types including danceability, valence, and tempo. Also, I would add more songs to the songs.csv file.
 
 ## 9. Personal Reflection
 
@@ -215,3 +222,4 @@ A few sentences about what you learned:
 - How did building this change how you think about real music recommenders
 - Where do you think human judgment still matters, even if the model seems "smart"
 
+- I was surprised that my system matched recommendations well when it came to similar genres, although the dataset was small. Building this recommender opened my eyes to the different methods that are used in larger recommenders and the many data types and user data that are taken into account when recommending similar music or recommend new music. I think human judgemnt matters when it comes to how to weigh different data types. The weight of each data type really depends on the Company and their own opinion on what is more important. 

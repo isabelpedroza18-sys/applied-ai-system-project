@@ -45,8 +45,30 @@ def main() -> None:
         "target_energy": 0.8,
         "likes_acoustic": False
     }
+
+    # Adversarial profiles to test edge cases
+    adversarial_profile_1 = {
+        "favorite_genre": "lofi",
+        "favorite_mood": "any", # A mood not in the dataset
+        "target_energy": 0.95,  # Extremely high energy
+        "likes_acoustic": False
+    }
+
+    adversarial_profile_2 = {
+        "favorite_genre": "nonexistent_genre", # A genre that is not in songs.csv
+        "favorite_mood": "intense",
+        "target_energy": 0.92,
+        "likes_acoustic": False
+    }
+
+    adversarial_profile_3 = {
+        "favorite_genre": "nonexistent_genre",
+        "favorite_mood": "any",
+        "target_energy": 0.5, # A neutral energy target
+        "likes_acoustic": True
+    }
     
-    user_profiles = [taste_profile1, taste_profile2, taste_profile3]
+    user_profiles = [taste_profile1, taste_profile2, taste_profile3, adversarial_profile_1, adversarial_profile_2, adversarial_profile_3]
     
     # 3. For each user profile, get and print recommendations
     for i, profile in enumerate(user_profiles, 1):
