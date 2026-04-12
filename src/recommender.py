@@ -74,9 +74,9 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
 
     # Define weights for each feature
     weights = {
-        "genre": 0.5,
-        "mood": 0.2,
-        "energy": 0.2,
+        "genre": 0.3,
+        "mood": 0.3,
+        "energy": 0.3,
         "acoustic": 0.1
     }
 
