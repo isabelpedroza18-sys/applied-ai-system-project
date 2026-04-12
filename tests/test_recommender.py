@@ -30,6 +30,80 @@ def make_small_recommender() -> Recommender:
     return Recommender(songs)
 
 
+def test_score_song_perfect_match():
+    """
+    Tests if a song that perfectly matches user preferences gets a high score.
+    """
+    from src.recommender import score_song
+    user_prefs = {
+        "favorite_genre": "pop",
+        "favorite_mood": "happy",
+        "target_energy": 0.8,
+        "likes_acoustic": False
+    }
+    song = {
+        "genre": "pop", "mood": "happy", "energy": 0.8, "acousticness": 0.1
+    }
+    
+    score, reasons = score_song(user_prefs, song)
+    
+    # With perfect matches on genre, mood, and energy, and a good acoustic score,
+    # the total score should be very high (close to 1.0)
+    assert score > 0.9
+    assert "Genre match" in ", ".join(reasons)
+    assert "Mood match" in ", ".join(reasons)
+    assert "Energy is a close match" in ", ".join(reasons)
+
+
+def test_score_song_mismatch():
+    """
+    Tests if a song that mismatches preferences gets a low score.
+    """
+    from src.recommender import score_song
+    user_prefs = {
+        "favorite_genre": "pop",
+        "favorite_mood": "happy",
+        "target_energy": 0.8,
+        "likes_acoustic": False
+    }
+    song = {
+        "genre": "rock", "mood": "sad", "energy": 0.2, "acousticness": 0.9
+    }
+    
+    score, reasons = score_song(user_prefs, song)
+    
+    # With no matches, the score should be very low.
+    # It won't be 0 because of the energy and acoustic calculations, but it will be small.
+    assert score < 0.3
+    assert len(reasons) == 0
+
+
+def test_score_song_acoustic_preference():
+    """
+    Tests the scoring logic for the 'likes_acoustic' preference.
+    """
+    from src.recommender import score_song
+    
+    # Case 1: User likes acoustic, song is highly acoustic
+    user_likes_acoustic = {"likes_acoustic": True}
+    acoustic_song = {"acousticness": 0.95}
+    
+    # We only need a subset of keys for this test
+    acoustic_score_like = score_song(
+        {"likes_acoustic": True, "favorite_genre": "", "favorite_mood": "", "target_energy": 0},
+        {"acousticness": 0.95, "genre": "", "mood": "", "energy": 0}
+    )[0]
+
+    # Case 2: User dislikes acoustic, song is highly acoustic
+    acoustic_score_dislike = score_song(
+        {"likes_acoustic": False, "favorite_genre": "", "favorite_mood": "", "target_energy": 0},
+        {"acousticness": 0.95, "genre": "", "mood": "", "energy": 0}
+    )[0]
+
+    # The score for the user who likes acoustic should be significantly higher
+    assert acoustic_score_like > acoustic_score_dislike
+
+
 def test_recommend_returns_songs_sorted_by_score():
     user = UserProfile(
         favorite_genre="pop",

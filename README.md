@@ -116,7 +116,7 @@ Combines reflection and model card framing from the Module 3 guidance. :contentR
 
 Give your recommender a name, for example:
 
-> VibeFinder 1.0
+> TuneTailor 1.0
 
 ---
 
@@ -129,7 +129,7 @@ Example:
 
 > This model suggests 3 to 5 songs from a small catalog based on a user's preferred genre, mood, and energy level. It is for classroom exploration only, not for real users.
 
----
+---This system recommends a handful of songe from a small, predefined catalog. It makes these suggestions by matching song attributes to a user's explicitly stated preferences for genre, mood, energy, and acoustic sound. This model is designed purely for educational and simulation purposes to demonstrate the core concepts of a content-based recommender; it is not intended for real-world application with actual users.
 
 ## 3. How It Works (Short Explanation)
 
@@ -141,7 +141,10 @@ Describe your scoring logic in plain language.
 
 Try to avoid code in this section, treat it like an explanation to a non programmer.
 
----
+---This recommender works by scoring every song in its catalog against a user's taste profile to find the best matches
+- It looks at four main features of a song: its genre (like 'pop' or 'rock'), its mood (like 'happy' or 'chill'), its energy level, and its acousticness (how much of the track is non-electric).
+-  It uses a simple "taste profile" that stores the user's favorite genre, favorite mood, a target energy level they're looking for, and whether or not they like acoustic music.
+- The system compares a song's features to the user's profile and awards points. A match in genre is worth the most points, followed by a mood match. It also awards points if a song's energy is very close to the user's target, and for how well its acoustic level matches the user's preference. These points are added up to create a final "similarity score" for the song. The higher the score, the better the recommendation.
 
 ## 4. Data
 
@@ -152,7 +155,7 @@ Describe your dataset.
 - What kinds of genres or moods are represented
 - Whose taste does this data mostly reflect
 
----
+--- There are 17 songs in the songs.csv dataset. With the help of Copilot, I added 7out of the 17 songs. The dataset is diverse and includes a mix of electronic and acousticc, mainstream niche genres such as pop, lofi, rock, ambient, jazz, synthwave, indie pop, electronic, reggae, country, and classical. The moods that are represented are happy, chill, intense, relaxed, moody, focused, energetic, uplifting, sad, peaceful, epic, thoughtful, and nostalgic. The dataset does not reflect a single person's taste. It is a curated collection designed for testinf a recommender system.
 
 ## 5. Strengths
 
@@ -163,7 +166,8 @@ You can think about:
 - Particular user profiles it served well
 - Simplicity or transparency benefits
 
----
+---My recommender can explain exactly why it chose a particular song. The recommendations are a direct and istant reflection of the user's stated preferences. The design is easy to understand since the entire logic is contained in a few functions , which is eficient for small-to-medium sized catalog of songs. It worked well with the default user profile which included pop as the genre and happy as the mood. 
+![alt text](image.png)
 
 ## 6. Limitations and Bias
 
@@ -175,7 +179,7 @@ Some prompts:
 - Is it biased toward high energy or one genre by default
 - How could this be unfair if used in a real product
 
----
+---The recommender is stateless. It cannot learn from a user's past interactions. Also, it is purely content-based system, so it will only recommend songs that are similar to what the user already likes. It will struggle to introduce the user to completely new and different genres or artist they might enjoy. The UserProfile simplifies human taste significantly. It does not account for preferences related to danceability, valece, or tempo. In addition, the recommenders world is limited to the songs listed in the songs.csv file. The weights I defined in the score_song function are based o nour own assumptions about what makes a good recommendation.
 
 ## 7. Evaluation
 
@@ -188,7 +192,8 @@ Examples:
 
 You do not need a numeric metric, but if you used one, explain what it measures.
 
----
+---I tried multiple user profiles to see if the results matched what I was expecting. I asked Copilot to generate some tests in this projects test_recommender. py file. I added scoring logic that worked with a small-to-medium scale dataset. 
+
 
 ## 8. Future Work
 
@@ -200,7 +205,7 @@ Examples:
 - Balance diversity of songs instead of always picking the closest match
 - Use more features, like tempo ranges or lyric themes
 
----
+---I would add more attributes to be stored into UserProfile so that the scoring would better match songs based on all the usual data types including danceability, valence, and tempo.
 
 ## 9. Personal Reflection
 
