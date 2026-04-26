@@ -50,13 +50,13 @@ def get_description(song_id: int, descriptions: Dict[int, str]) -> str:
 
 
 # Standalone test block - run with: python -m src.retriever
-if __name__ == "__main__":
-    print("Testing retriever module...\n")
-    descriptions = load_descriptions()
-    print(f"Loaded {len(descriptions)} descriptions.\n")
+# if __name__ == "__main__":
+#     print("Testing retriever module...\n")
+#     descriptions = load_descriptions()
+#     print(f"Loaded {len(descriptions)} descriptions.\n")
 
-    # Show a few sample lookups
-    for test_id in [1, 13, 27, 999]:  # 999 is intentionally invalid
-        desc = get_description(test_id, descriptions)
-        print(f"Song ID {test_id}:")
-        print(f"  {desc}\n")
+#     # Show a few sample lookups
+#     for test_id in [1, 13, 27, 999]:  # 999 is intentionally invalid
+#         desc = get_description(test_id, descriptions)
+#         print(f"Song ID {test_id}:")
+#         print(f"  {desc}\n")
