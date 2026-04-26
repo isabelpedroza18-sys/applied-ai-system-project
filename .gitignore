@@ -13,3 +13,6 @@ venv/
 
 # Pytest cache
 .pytest_cache/
+
+#Environment variables - NEVER commit this file
+.env
