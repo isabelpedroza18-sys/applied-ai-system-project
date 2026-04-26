@@ -114,7 +114,7 @@ Even when the user has impossible or conflicting preferences, the system produce
 
 ## 🎥 Video Walkthrough
 
-📺 **Loom video walkthrough:** _[Link will be added here after recording]_
+📺 **Loom video walkthrough:** https://www.loom.com/share/1d84e89e9391452183d7817b0d28a572
 
 The walkthrough demonstrates:
 - End-to-end system run with 2-3 different inputs
